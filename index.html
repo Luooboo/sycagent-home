@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>展示页</title>
+    <style>
+        :root {
+            --primary-bg: #eaf2f9;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-sub: #666666;
+            --icon-gradient: linear-gradient(135deg, #8a2be2, #4a90e2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* 隐藏的右上角入口 */
+        #secret-admin-btn {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background-color: transparent;
+            cursor: pointer;
+            z-index: 999;
+            /* 取消注释下面这行可以显示一个红色边框方便调试位置 */
+            /* border: 1px solid red; */
+        }
+
+        .container {
+            display: flex;
+            gap: 30px;
+            max-width: 1000px;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        /* 卡片基础样式 */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            flex: 1;
+            min-width: 320px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: var(--icon-gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 22px;
+            color: var(--text-main);
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        /* 左侧联系我们样式 */
+        .contact-item {
+            width: 100%;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(to right , #c7caed , 15% , #ffffff);
+        }
+
+        .contact-item .icon {
+            width: 30px;
+            height: 30px;
+            background: var(--icon-gradient);
+            border-radius: 8px;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .contact-text h4 { font-size: 14px; color: var(--text-main); margin-bottom: 4px;}
+        .contact-text p { font-size: 12px; color: var(--text-sub); }
+
+        .qr-code-box {
+            width: 100%;
+            background: linear-gradient(135deg, #4ab4e2, #862be2);
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .qr-placeholder {
+            width: 150px;
+            height: 150px;
+            background-color: white;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .qr-code-box p { color: white; font-size: 12px; opacity: 0.9; }
+
+        /* 右侧服务样式 */
+        .service-content { width: 100%; }
+        .service-desc {
+            font-size: 14px;
+            color: var(--text-sub);
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        .service-list { list-style: none; }
+        .service-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .service-list li svg {
+            width: 18px;
+            height: 18px;
+            background: var(--icon-gradient);
+            border-radius: 50%;
+            padding: 3px;
+            color: white;
+            margin-right: 10px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        /* 模拟后台弹窗样式 */
+        #admin-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .modal-header h3 { color: #333; }
+        .close-btn { cursor: pointer; font-size: 20px; color: #999; }
+        
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: monospace;
+            resize: vertical;
+            background: #f8f9fa;
+        }
+
+        .btn-group { display: flex; justify-content: flex-end; margin-top: 15px; gap: 10px; }
+        button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-save { background: #4a90e2; color: white; }
+        .btn-cancel { background: #e0e0e0; color: #333; }
+
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="secret-admin-btn" onclick="openAdmin()" title="点击进入内容编辑"></div>
+
+    <div class="container">
+        <div class="card">
+            <div class="icon-box">☎️</div>
+            <h2>联系我们</h2>
+            
+            <div class="contact-item">
+                <div class="icon">🕒</div>
+                <div class="contact-text">
+                    <h4>工作时间</h4>
+                    <p>10:00 - 18:00（周一至周日）</p>
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <div class="icon">💬</div>
+                <div class="contact-text">
+                    <h4>QQ客服</h4>
+                    <p>扫码或添加QQ号</p>
+                    <p>484266247</p>
+                </div>
+            </div>
+
+            <div class="qr-code-box">
+                <div class="qr-placeholder">
+                    <img src="C:\Users\萝卜拌饭仔\Desktop\QRcode.png" alt="示例图片" style="width: 150px;">
+                </div>
+                <p>扫一扫上面的二维码图案，加我为朋友。</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="icon-box">🤖</div>
+            <h2>我们的服务</h2>
+            
+            <div id="dynamic-content" class="service-content">
+                </div>
+        </div>
+    </div>
+
+    <div id="admin-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>页面内容设置 (支持HTML)</h3>
+                <span class="close-btn" onclick="closeAdmin()">&times;</span>
+            </div>
+            <p style="font-size: 12px; color: #666; margin-bottom: 10px;">在此输入右侧服务内容的HTML代码。点击保存后立即生效。</p>
+            <textarea id="editor-textarea"></textarea>
+            <div class="btn-group">
+                <button class="btn-cancel" onclick="closeAdmin()">取消</button>
+                <button class="btn-save" onclick="saveContent()">保存发布</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 默认的右侧 HTML 内容（包含勾号 SVG 和列表）
+        const defaultHTML = `
+            <p class="service-desc">专业提供 AI 大模型 API 中转服务，支持市场上所有 AI 模型，为开发者和企业提供稳定、高效的 AI 接入解决方案。</p>
+            <ul class="service-list">
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    24/7 稳定服务，99.9% 可用性保障
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    支持 OpenAI、Claude、Gemini 等所有市场 AI 模型
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    超高性价比，灵活的计费方式，按需付费无浪费
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    专业技术支持，快速响应
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    支持剩余额度退款，无任何限制
+                </li>
+            </ul>
+        `;
+
+        // 页面加载时初始化内容
+        window.onload = function() {
+            // 尝试从浏览器本地存储读取用户之前保存的内容
+            let savedContent = localStorage.getItem('websiteContent');
+            
+            // 如果没有保存过，就用默认的
+            if (!savedContent) {
+                savedContent = defaultHTML;
+            }
+            
+            // 将内容渲染到页面上
+            document.getElementById('dynamic-content').innerHTML = savedContent;
+        };
+
+        // 打开后台弹窗
+        function openAdmin() {
+            const modal = document.getElementById('admin-modal');
+            const textarea = document.getElementById('editor-textarea');
+            
+            // 将当前页面正在显示的代码加载到文本框中
+            textarea.value = document.getElementById('dynamic-content').innerHTML.trim();
+            modal.style.display = 'flex';
+        }
+
+        // 关闭后台弹窗
+        function closeAdmin() {
+            document.getElementById('admin-modal').style.display = 'none';
+        }
+
+        // 保存并应用修改
+        function saveContent() {
+            const newContent = document.getElementById('editor-textarea').value;
+            
+            // 更新页面展示
+            document.getElementById('dynamic-content').innerHTML = newContent;
+            
+            // 保存到本地存储
+            localStorage.setItem('websiteContent', newContent);
+            
+            // 关闭弹窗并提示
+            closeAdmin();
+            alert('修改已保存并生效！');
+        }
+    </script>
+</body>
+</html>
